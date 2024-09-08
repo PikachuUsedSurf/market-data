@@ -11,9 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
     // Database connection
     $host = 'localhost';
-    $db = 'your_database_name';
-    $user = 'your_username';
-    $pass = 'your_password';
+    $db = 'trade_results';
+    $user = 'root';
+    $pass = '';
     $charset = 'utf8mb4';
 
     $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
