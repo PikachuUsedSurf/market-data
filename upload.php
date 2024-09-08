@@ -31,37 +31,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
 
+            $date = '';
+            $lot = '';
+            $warehouse = '';
+            $district = '';
+            $bags = 0;
+            $kgs = 0;
+            $grade = '';
+            $union = '';
             $crop = '';
             $price = 0;
-            $kilograms = 0;
+            $buyer = '';
 
             foreach ($cellIterator as $cell) {
                 $column = $cell->getColumn();
                 $value = $cell->getValue();
 
-                if ($column == 'A') { // Crop column
-                    $crop = $value;
-                } elseif ($column == 'B') { // Price column
-                    $price = (float)$value;
-                } elseif ($column == 'C') { // Kilograms column
-                    $kilograms = (float)$value;
+                switch ($column) {
+                    case 'A':
+                        $date = $value;
+                        break;
+                    case 'B':
+                        $lot = $value;
+                        break;
+                    case 'C':
+                        $warehouse = $value;
+                        break;
+                    case 'D':
+                        $district = $value;
+                        break;
+                    case 'E':
+                        $bags = (int)$value;
+                        break;
+                    case 'F':
+                        $kgs = (float)$value;
+                        break;
+                    case 'G':
+                        $grade = $value;
+                        break;
+                    case 'H':
+                        $union = $value;
+                        break;
+                    case 'I':
+                        $crop = $value;
+                        break;
+                    case 'J':
+                        $price = (float)$value;
+                        break;
+                    case 'K':
+                        $buyer = $value;
+                        break;
                 }
             }
 
             // Insert or update data in the database
             $stmt = $pdo->prepare("
-                INSERT INTO crops (crop, highest_price, lowest_price, total_kgs)
-                VALUES (:crop, :price, :price, :kilograms)
+                INSERT INTO crops (union_name, crop, highest_price, lowest_price, total_kgs)
+                VALUES (:union_name, :crop, :price, :price, :kgs)
                 ON DUPLICATE KEY UPDATE
                 highest_price = GREATEST(highest_price, :price),
                 lowest_price = LEAST(lowest_price, :price),
-                total_kgs = total_kgs + :kilograms
+                total_kgs = total_kgs + :kgs
             ");
 
             $stmt->execute([
+                ':union_name' => $union,
                 ':crop' => $crop,
                 ':price' => $price,
-                ':kilograms' => $kilograms,
+                ':kgs' => $kgs,
             ]);
         }
 
