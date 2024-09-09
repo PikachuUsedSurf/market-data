@@ -54,7 +54,7 @@ $result = $conn->query($sql);
             text-align: center;
         }
         .union-summary {
-            text-align: left;
+            text-align: center;
             font-weight: bold;
         }
     </style>
@@ -65,8 +65,13 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $currentUnion = "";
     $currentCrop = "";
+    $current_date = "";
+    $date_title = ""; // Variable to store the date for the title
 
     while($row = $result->fetch_assoc()) {
+        $date = $row["date"];
+        $date_title = $date; // Store the date for the title
+
         // Start a new table for a new union
         if ($row["union_name"] != $currentUnion) {
             if ($currentUnion !== "") {
@@ -76,16 +81,15 @@ if ($result->num_rows > 0) {
             $currentUnion = $row["union_name"];
             $currentCrop = $row["crop"];
             
-            
-
             // Calculate and display union summary
             $unionSummary = getUnionSummary($conn, $currentUnion);
             echo "<div class='union-summary'>";
-            echo "<h3>Seller: " . htmlspecialchars($currentUnion) . "</h3>";
-            echo "<h3>Crop: " . htmlspecialchars($currentCrop) . "</h3>";
-            echo "<p>Total Weight: " . number_format($unionSummary["total_weight"], 2) . " Kgs</p>";
-            echo "<p>Highest Price: " . number_format($unionSummary["highest_price"], 2) . " Tsh</p>";
-            echo "<p>Lowest Price: " . number_format($unionSummary["lowest_price"], 2) . " Tsh</p>";
+            echo "<h3>DAILY MARKET REPORT OF " . date("d", strtotime($date_title)) . " " . date("F", strtotime($date_title)) . ", " . date("Y", strtotime($date_title)) . "</h3>";
+            echo "<h3>SELLER: " . htmlspecialchars($currentUnion) . "</h3>";
+            echo "<h3>COMMODITY: " . htmlspecialchars($currentCrop) . "</h3>";
+            echo "<p>HIGH PRICE: " . number_format($unionSummary["highest_price"], 2) . " Tsh</p>";
+            echo "<p>LOW PRICE: " . number_format($unionSummary["lowest_price"], 2) . " Tsh</p>";
+            echo "<p>TOTAL QUANTITY TRADED: " . number_format($unionSummary["total_weight"], 2) . " Kgs</p>";
             echo "</div>";
 
             echo "<table border='1'>";
