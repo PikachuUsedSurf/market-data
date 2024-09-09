@@ -87,20 +87,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             // Insert or update data in the database
             $stmt = $pdo->prepare("
             INSERT INTO trade_results (union_name, crop, highest_price, lowest_price, total_kgs)
-            VALUES (:union_name, :crop, :highest_price, :lowest_price, :kgs)
+            VALUES (union_name, crop, highest_price, lowest_price, kgs)
             ON DUPLICATE KEY UPDATE
-            highest_price = GREATEST(highest_price, :highest_price),
-            lowest_price = LEAST(lowest_price, :lowest_price),
-            total_kgs = total_kgs + :kgs
+            highest_price = GREATEST(highest_price, VALUES(highest_price)),
+            lowest_price = LEAST(lowest_price, VALUES(lowest_price)),
+            total_kgs = total_kgs + VALUES(total_kgs)
         ");
         
         $stmt->execute([
-            ':union_name' => $union,
-            ':crop' => $crop,
-            ':highest_price' => $price,
-            ':lowest_price' => $price,
-            ':kgs' => $kgs,
+            'union_name' => $union,
+            'crop' => $crop,
+            'highest_price' => $price,
+            'lowest_price' => $price,
+            'kgs' => $kgs,
         ]);
+        
         
         }
             //end
