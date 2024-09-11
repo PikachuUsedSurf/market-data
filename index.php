@@ -129,7 +129,8 @@ try {
             </div>
         </div>
 
-        <a href="/market-data/data-report.php" class="btn btn-secondary">View Data Report</a>
+        <a href="/market-data/data-report.php" class="btn btn-secondary">View Data Report sorted by UNION</a>
+        <a href="/market-data/data-report-district.php" class="btn btn-secondary">View Data Report sorted by DISTRICT</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
