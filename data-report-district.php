@@ -8,7 +8,8 @@ $config = [
 ];
 
 // Database connection
-function connectToDatabase($config) {
+function connectToDatabase($config)
+{
     $conn = new mysqli($config['servername'], $config['username'], $config['password'], $config['dbname']);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
@@ -17,13 +18,15 @@ function connectToDatabase($config) {
 }
 
 // Fetch data
-function fetchCropData($conn) {
+function fetchCropData($conn)
+{
     $sql = "SELECT * FROM crop_data ORDER BY district, crop";
     return $conn->query($sql);
 }
 
 // Calculate district summary
-function getDistrictSummary($conn, $district) {
+function getDistrictSummary($conn, $district)
+{
     $sql = "SELECT SUM(kgs) as total_weight, MAX(price) as highest_price, MIN(price) as lowest_price 
             FROM crop_data WHERE district = ?";
     $stmt = $conn->prepare($sql);
@@ -34,7 +37,8 @@ function getDistrictSummary($conn, $district) {
 }
 
 // Generate HTML for district summary (accordion header)
-function generateDistrictSummaryHTML($district, $crop, $date, $summary, $index) {
+function generateDistrictSummaryHTML($district, $crop, $date, $summary, $index)
+{
     $dateFormatted = date("d F, Y", strtotime($date));
     $html = "<div class='accordion-item'>";
     $html .= "<h2 class='accordion-header' id='heading{$index}'>";
@@ -54,7 +58,8 @@ function generateDistrictSummaryHTML($district, $crop, $date, $summary, $index) 
 }
 
 // Generate HTML for table (part of the accordion content)
-function generateTableHTML($data) {
+function generateTableHTML($data)
+{
     $html = "<table class='table table-striped'>
             <thead>
                 <tr>
@@ -70,7 +75,7 @@ function generateTableHTML($data) {
                 </tr>
             </thead>
             <tbody>";
-    
+
     foreach ($data as $row) {
         $html .= "<tr>";
         $html .= "<td>{$row['date']}</td>";
@@ -84,7 +89,7 @@ function generateTableHTML($data) {
         $html .= "<td>{$row['price']}</td>";
         $html .= "</tr>";
     }
-    
+
     $html .= "</tbody></table>";
     $html .= "</div></div></div>";
     return $html;
@@ -101,7 +106,7 @@ if ($result->num_rows > 0) {
     $currentDistrict = "";
     $districtData = [];
 
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         if ($row["district"] != $currentDistrict) {
             if ($currentDistrict !== "") {
                 $districtSummary = getDistrictSummary($conn, $currentDistrict);
@@ -114,7 +119,7 @@ if ($result->num_rows > 0) {
         }
         $districtData[] = $row;
     }
-    
+
     // Handle the last district
     $districtSummary = getDistrictSummary($conn, $currentDistrict);
     $accordionHtml .= generateDistrictSummaryHTML($currentDistrict, $districtData[0]["crop"], $districtData[0]["date"], $districtSummary, $index);
@@ -128,19 +133,24 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>District-based Market Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { padding: 20px; }
+        body {
+            padding: 20px;
+        }
+
         .accordion-button:not(.collapsed) {
             background-color: #e7f1ff;
             color: #0c63e4;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1 class="mb-4">District-based Market Report</h1>
@@ -148,7 +158,8 @@ $conn->close();
             <?php echo $accordionHtml; ?>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
