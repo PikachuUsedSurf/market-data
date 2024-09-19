@@ -37,8 +37,7 @@ function getRegion($district)
         'LINDI' => 'Lindi',
         'LINDI_RURAL' => 'Lindi',
         'Nyaghwale' => 'Geita',
-
-        // Add more regions hereee
+        // Add more regions here
     ];
     return isset($regionMap[$district]) ? $regionMap[$district] : 'Unknown';
 }
@@ -62,6 +61,30 @@ function fetchCropData($conn)
     return $result;
 }
 
+// New function to calculate region summary
+function calculateRegionSummary($regionData)
+{
+    $totalKgs = 0;
+    $highestPrice = 0;
+    $lowestPrice = PHP_INT_MAX;
+
+    foreach ($regionData as $districtData) {
+        foreach ($districtData as $unionData) {
+            foreach ($unionData as $cropData) {
+                $totalKgs += $cropData['total_kgs'];
+                $highestPrice = max($highestPrice, $cropData['highest_price']);
+                $lowestPrice = min($lowestPrice, $cropData['lowest_price']);
+            }
+        }
+    }
+
+    return [
+        'total_kgs' => $totalKgs,
+        'highest_price' => $highestPrice,
+        'lowest_price' => $lowestPrice
+    ];
+}
+
 // Generate HTML for date summary (accordion header)
 function generateDateSummaryHTML($date, $regionData, $index)
 {
@@ -78,7 +101,13 @@ function generateDateSummaryHTML($date, $regionData, $index)
 
     // Generate HTML for regions
     foreach ($regionData as $region => $districtData) {
-        $html .= "<h3>{$region} Region</h3>";
+        $regionSummary = calculateRegionSummary($districtData);
+        $html .= "<h3>{$region} Region ";
+        $html .= "<small class='text-muted'>";
+        $html .= "(Total: " . number_format($regionSummary['total_kgs'], 2) . " kg, ";
+        $html .= "Highest: " . number_format($regionSummary['highest_price'], 2) . " TZS, ";
+        $html .= "Lowest: " . number_format($regionSummary['lowest_price'], 2) . " TZS)";
+        $html .= "</small></h3>";
         $html .= "<div class='accordion' id='region-{$region}'>"; // Start region accordion
 
         // Generate HTML for districts within the region
