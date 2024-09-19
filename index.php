@@ -225,10 +225,10 @@ $conn->close();
                         <td><?= htmlspecialchars($row['date']) ?></td>
                         <td><?= htmlspecialchars($row['district']) ?></td>
                         <td><?= htmlspecialchars($row['crop']) ?></td>
-                        <td><?= htmlspecialchars(string: $row['kgs']) ?></td>
+                        <td><?= htmlspecialchars($row['kgs']) ?></td>
                         <td><?= htmlspecialchars($row['price']) ?></td>
                         <td>
-                            <button class="btn btn-sm btn-primary" onclick="editRecord(<?= $row['id'] ?>)">Edit</button>
+                            <a href="edit-record.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
                             <form method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this record?');">
                                 <input type="hidden" name="record_id" value="<?= $row['id'] ?>">
                                 <button type="submit" class="btn btn-sm btn-danger" name="delete_record">Delete</button>
